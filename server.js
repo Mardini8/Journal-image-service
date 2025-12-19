@@ -8,11 +8,18 @@ const imageRoutes = require('./routes/imageRoutes');
 const db = require('./database/setup');
 
 const app = express();
+
+// Use PORT from environment variable (CBH Cloud sets this)
 const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://localhost:30000'],
+    origin: [
+        'http://localhost:3000',
+        'http://localhost:30000',
+        'https://patientsystem-frontend.app.cloud.cbh.kth.se',
+        /\.app\.cloud\.cbh\.kth\.se$/  // Allow all CBH Cloud subdomains
+    ],
     credentials: true
 }));
 app.use(express.json());
@@ -71,9 +78,9 @@ async function startServer() {
         // Initialize tables
         await db.initializeTables();
 
-        // Start server
-        app.listen(PORT, () => {
-            console.log(`✓ Image Service running on http://localhost:${PORT}`);
+        // Start server - listen on PORT from environment
+        app.listen(PORT, '0.0.0.0', () => {
+            console.log(`✓ Image Service running on http://0.0.0.0:${PORT}`);
             console.log('✓ Database initialized');
             console.log('✓ Ready to accept image uploads');
             console.log('✓ Client-side editing enabled');
